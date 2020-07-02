@@ -1,11 +1,11 @@
 #include <iostream>
 #include <cstdint>
+#include <string>
 #include <omp.h>
 
 using namespace std;
 
 #define td 4
-#define N 100000000
 
 inline int64_t step(int64_t n) {
 	int64_t output = 1; // make sure it terminates if there's some error
@@ -15,13 +15,17 @@ inline int64_t step(int64_t n) {
 }
 
 
-int main() {
+int main(int argc, char* argv[]) {
 
 	double t0 = omp_get_wtime();
-	omp_set_num_threads(td);
+	//omp_set_num_threads(td);
+	// it should figure out how many threads you have automatically, but if not, use this
 
 	int64_t start = 3;
 	int64_t x;
+	int64_t N = 1000000;
+	if (argc >= 1) { N = stoi(argv[1]); }
+
 	int64_t longest_start[td];
 	int longest_sequence[td];
 	int temp_len;
