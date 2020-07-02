@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 #include <cstdint>
 #include <string>
 #include <omp.h>
@@ -24,16 +25,23 @@ int main(int argc, char* argv[]) {
 	int64_t start = 3;
 	int64_t x;
 	const bool check_evens = false;	
+	const bool logging = true;
 
 	int64_t N = 1000000;
 	if (argc >= 2) { N = stoi(argv[1]); }
+	int num_td = 2;
 
-	int64_t longest_start[td];
-	int longest_sequence[td];
+	#pragma omp parallel
+	{
+		num_td = omp_get_num_threads();
+	}
+	
+	int64_t longest_start[num_td];
+	int longest_sequence[num_td];
 	int temp_len;
 	int i;
 
-	for (i = 0; i < td; i++) {
+	for (i = 0; i < num_td; i++) {
 		longest_start[i] = 0;
 		longest_sequence[i] = 0;
 	}
@@ -58,7 +66,7 @@ int main(int argc, char* argv[]) {
 
 	int64_t output_start = 0;
 	int output_seq = 0;
-	for (i = 0; i < td; i++) {
+	for (i = 0; i < num_td; i++) {
 		if ( longest_sequence[i] > output_seq ) {
 			output_seq = longest_sequence[i];
 			output_start = longest_start[i];
@@ -69,6 +77,26 @@ int main(int argc, char* argv[]) {
 	double t1 = omp_get_wtime();
 	cout << "Collatz sequence starting with " << output_start << " has " << output_seq << " terms\n";
 	cout << "Calculation took " << (t1 - t0) << " seconds\n";
+
+	if (logging) {
+		x = output_start;
+		int64_t* sequence = new int64_t[output_seq];
+		int count = 0;
+
+		while (x != 1) {
+			sequence[count] = x;
+			x = step(x);
+			count++;
+		}
+
+		ofstream f;
+		f.open("sequence.txt");
+		for (i = 0; i < output_seq; i++) {
+			f << sequence[i] << endl;
+		}
+		f.close();
+		delete[] sequence;
+	}
 
 	return 0;
 }
