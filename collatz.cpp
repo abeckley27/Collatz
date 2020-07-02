@@ -23,8 +23,10 @@ int main(int argc, char* argv[]) {
 
 	int64_t start = 3;
 	int64_t x;
+	const bool check_evens = false;	
+
 	int64_t N = 1000000;
-	if (argc >= 1) { N = stoi(argv[1]); }
+	if (argc >= 2) { N = stoi(argv[1]); }
 
 	int64_t longest_start[td];
 	int longest_sequence[td];
@@ -40,7 +42,7 @@ int main(int argc, char* argv[]) {
 	{
 		int ID = omp_get_thread_num();
 		#pragma omp for schedule(dynamic, 64)
-		for (int64_t j = start; j < N; j += 2) {
+		for (int64_t j = start; j < N; j += (2 - check_evens)) {
 			temp_len = 0;
 			x = j;
 			while (x != 1) { 
