@@ -5,7 +5,6 @@
 #include <omp.h>
 
 using namespace std;
-
 #define td 4
 
 inline int64_t step(int64_t n) {
@@ -14,7 +13,6 @@ inline int64_t step(int64_t n) {
 	else { output = n / 2; }
 	return output;
 }
-
 
 int main(int argc, char* argv[]) {
 
@@ -29,6 +27,7 @@ int main(int argc, char* argv[]) {
 
 	int64_t N = 1000000;
 	if (argc >= 2) { N = stoi(argv[1]); }
+	const int chunk_size = 64;
 	int num_td = 2;
 
 	#pragma omp parallel
@@ -49,7 +48,7 @@ int main(int argc, char* argv[]) {
 	#pragma omp parallel
 	{
 		int ID = omp_get_thread_num();
-		#pragma omp for schedule(dynamic, 64)
+		#pragma omp for schedule(dynamic, chunk_size)
 		for (int64_t j = start; j < N; j += (2 - check_evens)) {
 			temp_len = 0;
 			x = j;
@@ -97,6 +96,5 @@ int main(int argc, char* argv[]) {
 		f.close();
 		delete[] sequence;
 	}
-
 	return 0;
 }
