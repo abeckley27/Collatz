@@ -28,15 +28,15 @@ int main(int argc, char* argv[]) {
 	int64_t N = 1000000;
 	if (argc >= 2) { N = stoi(argv[1]); }
 	const int chunk_size = 64;
-	int num_td = 2;
+	int num_td = td;
 
 	#pragma omp parallel
 	{
 		num_td = omp_get_num_threads();
 	}
 	
-	int64_t longest_start[num_td];
-	int longest_sequence[num_td];
+	int64_t* longest_start = new int64_t[num_td];
+	int* longest_sequence = new int[num_td];
 	int temp_len;
 	int i;
 
@@ -76,6 +76,9 @@ int main(int argc, char* argv[]) {
 	double t1 = omp_get_wtime();
 	cout << "Collatz sequence starting with " << output_start << " has " << output_seq << " terms\n";
 	cout << "Calculation took " << (t1 - t0) << " seconds\n";
+	
+	delete[] longest_start;
+	delete[] longest_sequence;
 
 	if (logging) {
 		x = output_start;
