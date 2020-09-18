@@ -25,11 +25,14 @@ int main(int argc, char* argv[]) {
 	const bool check_evens = false;	
 	const bool logging = true;
 
+	// Set the chunk size for the parallel for loop schedule
+	const int chunk_size = 64;
+	
+	// Default value for upper bound
 	int64_t N = 1000000;
 	if (argc >= 2) { N = stoi(argv[1]); }
-	const int chunk_size = 64;
+	
 	int num_td = td;
-
 	#pragma omp parallel
 	{
 		num_td = omp_get_num_threads();
@@ -65,6 +68,8 @@ int main(int argc, char* argv[]) {
 
 	int64_t output_start = 0;
 	int output_seq = 0;
+
+	// Go through each thread's results and find the longest sequence
 	for (i = 0; i < num_td; i++) {
 		if ( longest_sequence[i] > output_seq ) {
 			output_seq = longest_sequence[i];
@@ -85,6 +90,7 @@ int main(int argc, char* argv[]) {
 		int64_t* sequence = new int64_t[output_seq];
 		int count = 0;
 
+		// Calculate the sequence again
 		while (x != 1) {
 			sequence[count] = x;
 			x = step(x);
